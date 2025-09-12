@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.api
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'
+    volumes:
+      - .:/code
+  worker:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.worker
+    env_file: .env
+    depends_on:
+      - redis
+    volumes:
+      - .:/code
+    command: celery -A app.celery_app worker --loglevel=INFO --concurrency=2
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+volumes:
+  ollama:
