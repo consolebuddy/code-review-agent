@@ -216,7 +216,3 @@ Using `loguru`. Celery also emits task logs. In production, configure JSON sink 
 - Better JSON schema validation of LLM output
 
 ---
-
-## 📜 License
-
-MIT
